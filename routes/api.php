@@ -23,4 +23,6 @@ Route::prefix('v1')->group(function(){
     Route::get('paquetes/cargados/{id}',[PaquetesCargadosController::class, 'MostrarPaquetesCargados']);
     Route::post('paquetes/entregar/', [PaquetesCargadosController::class, 'EntregarPaquete']);
     Route::get('paquetes/entregados/', [PaquetesCargadosController::class, 'MostrarPaquetesEntregados']);
+    Route::get('paquetes/paraEntregar/', [PaquetesCargadosController::class, 'MostrarPaquetesParaEntregar']);
+    Route::get('paquetes/paraEntregar/detalle/{id}', [PaquetesCargadosController::class, 'DetallePaquete']);
 });

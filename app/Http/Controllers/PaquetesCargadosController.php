@@ -54,4 +54,25 @@ class PaquetesCargadosController extends Controller
         return $paquetes_entregados;
     }
 
+    public function MostrarPaquetesParaEntregar(Request $request){
+
+        $paquetes_para_entregar = DB::table('paquete_para_entregar')
+        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino')
+        ->get();
+
+        return $paquetes_para_entregar;
+
+    }
+
+    public function DetallePaquete($id){
+
+        $detalle_paquete = DB::table('paquete_para_entregar')
+        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino')
+        ->where('paquete_para_entregar.id', '=', $id)
+        ->get();
+
+        return $detalle_paquete;
+
+    } 
+
 }
