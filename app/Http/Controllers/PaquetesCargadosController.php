@@ -67,7 +67,9 @@ class PaquetesCargadosController extends Controller
     public function DetallePaquete($id){
 
         $detalle_paquete = DB::table('paquete_para_entregar')
-        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino')
+        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'ubicacion.direccion', 'ubicacion.codigo_postal')
+        ->join('paquete', 'paquete_para_entregar.id', '=', 'paquete.id')
+        ->join('ubicacion', 'paquete_para_entregar.ubicacion_destino', '=', 'ubicacion.id')
         ->where('paquete_para_entregar.id', '=', $id)
         ->get();
 
