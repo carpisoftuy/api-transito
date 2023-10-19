@@ -30,7 +30,6 @@ class PaquetesCargadosController extends Controller
     }
 
     public function EntregarPaquete(Request $request){
-
         $paquetes_entregados = DB::table('paquete_entregado')
         ->insert(['id' => $request->post('id')]);
 
@@ -58,6 +57,8 @@ class PaquetesCargadosController extends Controller
 
         $paquetes_para_entregar = DB::table('paquete_para_entregar')
         ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino')
+        ->leftJoin('paquete_entregado', 'paquete_entregado.id', '=', 'paquete_para_entregar.id')
+        ->whereNull('paquete_entregado.id')
         ->get();
 
         return $paquetes_para_entregar;
