@@ -73,6 +73,8 @@ class PaquetesCargadosController extends Controller
         ->where('paquete_para_entregar.id', '=', $id)
         ->get();
 
+        if(!DB::table('paquete_para_entregar')->find($id)) abort(404);
+        
         return $detalle_paquete;
 
     } 
