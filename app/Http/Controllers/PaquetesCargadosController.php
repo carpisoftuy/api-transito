@@ -13,7 +13,7 @@ class PaquetesCargadosController extends Controller
         ->select('id');
         
         $paquetes_en_transito = DB::table('carga_paquete')
-        ->select('paquete.id', 'paquete.peso', 'paquete.volumen', 'ubicacion.direccion', 'ubicacion.codigo_postal', 'ubicacion.latitud', 'ubicacion.longitud')
+        ->select('paquete.id', 'paquete.peso', 'paquete.volumen', 'ubicacion.direccion', 'ubicacion.codigo_postal', 'ubicacion.latitud', 'ubicacion.longitud', 'usuario.id id_usuario')
         ->join('paquete', 'carga_paquete.id_paquete', '=', 'paquete.id')
         ->join('camioneta', 'carga_paquete.id_vehiculo', '=', 'camioneta.id')
         ->join('vehiculo', 'camioneta.id', '=', 'vehiculo.id')
@@ -30,15 +30,18 @@ class PaquetesCargadosController extends Controller
     }
 
     public function EntregarPaquete(Request $request){
-
         $paquetes_entregados = DB::table('paquete_entregado')
-        ->insert(['id' => $request->post('id')]);
+        ->insert([
+            'id' => $request->post('id'),
+            'fecha_entregado' => now()
+        ]);
 
         $id_variable = DB::table('carga_paquete')
         ->select('carga_paquete.id')
         ->where('id_paquete' , '=', $request->post('id'))
         ->first();
 
+        if(!is_null($id_variable))
         DB::table('carga_paquete_fin')
         ->insert(['id'=>$id_variable->id]);
 
@@ -58,6 +61,8 @@ class PaquetesCargadosController extends Controller
 
         $paquetes_para_entregar = DB::table('paquete_para_entregar')
         ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino')
+        ->leftJoin('paquete_entregado', 'paquete_entregado.id', '=', 'paquete_para_entregar.id')
+        ->whereNull('paquete_entregado.id')
         ->get();
 
         return $paquetes_para_entregar;
@@ -67,9 +72,19 @@ class PaquetesCargadosController extends Controller
     public function DetallePaquete($id){
 
         $detalle_paquete = DB::table('paquete_para_entregar')
-        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'ubicacion.direccion', 'ubicacion.codigo_postal')
+        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'ubicacion.direccion', 'ubicacion.latitud', 'ubicacion.longitud', 'ubicacion.codigo_postal', 'usuario.id as id_usuario')
+        ->leftJoin('paquete_entregado', 'paquete_entregado.id', '=', 'paquete_para_entregar.id')
+        ->whereNull('paquete_entregado.id')
         ->join('paquete', 'paquete_para_entregar.id', '=', 'paquete.id')
         ->join('ubicacion', 'paquete_para_entregar.ubicacion_destino', '=', 'ubicacion.id')
+        ->join('carga_paquete', 'carga_paquete.id', '=', 'paquete.id')
+        ->leftJoin('carga_paquete_fin', 'carga_paquete_fin.id', '=', 'carga_paquete.id')
+        ->whereNull('carga_paquete_fin.id')
+        ->join('vehiculo', 'vehiculo.id', '=', 'carga_paquete.id_vehiculo')
+        ->join('maneja', 'maneja.id_vehiculo', '=', 'vehiculo.id')
+        ->leftJoin('maneja_fin', 'maneja_fin.id', '=', 'maneja.id')
+        ->whereNull('maneja_fin.id')
+        ->join('usuario', 'usuario.id', '=', 'maneja.id_usuario')
         ->where('paquete_para_entregar.id', '=', $id)
         ->get();
 
@@ -77,6 +92,6 @@ class PaquetesCargadosController extends Controller
         
         return $detalle_paquete;
 
-    } 
+    }    
 
 }
