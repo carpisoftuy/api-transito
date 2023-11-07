@@ -71,7 +71,7 @@ class PaquetesCargadosController extends Controller
 
     public function DetallePaquete($id){
 
-        $detalle_paquete = DB::table('paquete_para_entregar')
+       /*  $detalle_paquete = DB::table('paquete_para_entregar')
         ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'ubicacion.direccion', 'ubicacion.latitud', 'ubicacion.longitud', 'ubicacion.codigo_postal', 'usuario.id as id_usuario')
         ->leftJoin('paquete_entregado', 'paquete_entregado.id', '=', 'paquete_para_entregar.id')
         ->whereNull('paquete_entregado.id')
@@ -90,7 +90,28 @@ class PaquetesCargadosController extends Controller
 
         if(!DB::table('paquete_para_entregar')->find($id)) abort(404);
         
-        return $detalle_paquete;
+        return $detalle_paquete; */
+
+        $detalle_paquete = DB::table('paquete_para_entregar')
+        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'paquete.volumen', 'ubicacion.direccion', 'ubicacion.latitud', 'ubicacion.longitud', 'ubicacion.codigo_postal', 'usuario.id as id_usuario', 'usuario.nombre as nombre', 'usuario.apellido as apellido') 
+        ->leftJoin('paquete_entregado', 'paquete_entregado.id', '=', 'paquete_para_entregar.id')
+        ->whereNull('paquete_entregado.id')
+        ->join('paquete', 'paquete_para_entregar.id', '=', 'paquete.id')
+        ->join('ubicacion', 'paquete_para_entregar.ubicacion_destino', '=', 'ubicacion.id')
+        ->join('carga_paquete', 'carga_paquete.id_paquete', '=', 'paquete.id')
+        ->leftJoin('carga_paquete_fin', 'carga_paquete_fin.id', '=', 'carga_paquete.id')
+        ->whereNull('carga_paquete_fin.id')
+        ->join('vehiculo', 'vehiculo.id', '=', 'carga_paquete.id_vehiculo')
+        ->join('maneja', 'maneja.id_vehiculo', '=', 'vehiculo.id')
+        ->leftJoin('maneja_fin', 'maneja_fin.id', '=', 'maneja.id')
+        ->whereNull('maneja_fin.id')
+        ->join('usuario', 'usuario.id', '=', 'maneja.id_usuario')
+        ->where('paquete_para_entregar.id', '=', $id)
+        ->get();
+
+        if(!DB::table('paquete_para_entregar')->find($id)) abort(404);
+
+        return $detalle_paquete; 
 
     }    
 
