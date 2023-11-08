@@ -93,7 +93,7 @@ class PaquetesCargadosController extends Controller
         return $detalle_paquete; */
 
         $detalle_paquete = DB::table('paquete_para_entregar')
-        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'paquete.volumen', 'ubicacion.direccion', 'ubicacion.latitud', 'ubicacion.longitud', 'ubicacion.codigo_postal', 'usuario.id as id_usuario', 'usuario.nombre as nombre', 'usuario.apellido as apellido') 
+        ->select('paquete_para_entregar.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'paquete.volumen', 'ubicacion.direccion', 'ubicacion.latitud', 'ubicacion.longitud', 'ubicacion.codigo_postal', 'usuario.id as id_usuario', 'usuario.nombre as nombre', 'usuario.apellido as apellido', 'vehiculo.matricula') 
         ->leftJoin('paquete_entregado', 'paquete_entregado.id', '=', 'paquete_para_entregar.id')
         ->whereNull('paquete_entregado.id')
         ->join('paquete', 'paquete_para_entregar.id', '=', 'paquete.id')
@@ -112,6 +112,9 @@ class PaquetesCargadosController extends Controller
         if(!DB::table('paquete_para_entregar')->find($id)) abort(404);
 
         return $detalle_paquete; 
+
+        //if esta en almacen que me mande un dato en almacen "x"
+        //else manda el camion cargado
 
     }    
 
