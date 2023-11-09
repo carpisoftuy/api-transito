@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaquetesCargadosController;
+use App\Http\Controllers\BultosCargadosController;
+use App\Http\Controllers\AlmacenesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,4 +28,12 @@ Route::prefix('v1')->group(function(){
     Route::get('paquetes/paraEntregar/', [PaquetesCargadosController::class, 'MostrarPaquetesParaEntregar']);
     Route::get('paquetes/paraEntregar/{id}', [PaquetesCargadosController::class, 'MostrarPaquetesParaEntregarDeUnChofer']);
     Route::get('paquetes/paraEntregar/detalle/{id}', [PaquetesCargadosController::class, 'DetallePaquete']);
+
+    Route::get('bultos/cargados/',[BultosCargadosController::class, 'GetBultosCargados']);
+    Route::post('bultos/descargar/',[BultosCargadosController::class, 'DescargarBulto']);
+    Route::get('bultos/descargados/',[BultosCargadosController::class, 'GetBultosDescargados']);
+
+    Route::get('almacenes/',[AlmacenesController::class, 'GetAlmacenes']);
+
+    
 });
