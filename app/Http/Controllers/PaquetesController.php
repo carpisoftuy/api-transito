@@ -38,7 +38,7 @@ class PaquetesController extends Controller
             ->select('id')
         )
         ->get();
-
+        DB::beginTransaction();
         foreach($paquetesEnCamioneta as $paqueteEnCamioneta){
             $paquetesEnCamionetaFin = new CargaPaqueteFin();
             $paquetesEnCamionetaFin->id = $paqueteEnCamioneta->id;
@@ -46,14 +46,13 @@ class PaquetesController extends Controller
             $paquetesEnCamionetaFin->save();
         }
 
-        if($paquete->para_entregar != null){
-            $paqueteEntregado = new PaqueteEntregado();
-            $paqueteEntregado->id = $paquete->para_entregar;
-            $paqueteEntregado->fecha_entregado = now();
-            $paqueteEntregado->save();
-        }
+        $paqueteEntregado = new PaqueteEntregado();
+        $paqueteEntregado->id = $paquete->para_entregar;
+        $paqueteEntregado->fecha_entregado = now();
+        $paqueteEntregado->save();
+        DB::commit();
 
-        return "entregado";
+        return "paquete ".$paqueteEntregado." entregado";
     }
 
     public function DescargarPaquete(Request $request){
@@ -63,7 +62,7 @@ class PaquetesController extends Controller
             ->select('id')
         )
         ->get();
-
+        DB::beginTransaction();
         foreach($paquetesEnCamioneta as $paqueteEnCamioneta){
             $paquetesEnCamionetaFin = new CargaPaqueteFin();
             $paquetesEnCamionetaFin->id = $paqueteEnCamioneta->id;
@@ -76,7 +75,7 @@ class PaquetesController extends Controller
         $almacenContienePaquete->id_almacen = $request->id_almacen;
         $almacenContienePaquete->fecha_inicio = now();
         $almacenContienePaquete->save();
-
-        return "paquete descargado en almacen" . $almacenContienePaquete->id_almacen ;
+        DB::commit();
+        return "paquete".$request->id_paquete." descargado en almacen " . $almacenContienePaquete->id_almacen ;
     }
 }
