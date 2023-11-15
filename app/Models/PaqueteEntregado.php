@@ -5,18 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Vehiculo extends Model
+class PaqueteEntregado extends Model
 {
     use HasFactory;
 
-    protected $table = "vehiculo";
+    protected $table = "paquete_entregado";
 
     public $timestamps = false;
     protected $fillable = [
 
-        "codigo_pais",
-        "matricula",
-        "capacidad_volumen",
-        "capacidad_peso",
+        "id"
+
     ];
 }
