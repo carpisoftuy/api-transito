@@ -72,23 +72,30 @@ class PaquetesCargadosController extends Controller
     public function DetallePaquete($id){
 
         $detalle_paquete = DB::table('paquete')
-        ->select('paquete.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'paquete.volumen', 'almacen.id_ubicacion as id_ubicacion_almacen', 'ubicacion_almacen.direccion as direccion_almacen', 'ubicacion.direccion', 'ubicacion.latitud', 'ubicacion.longitud', 'ubicacion.codigo_postal', 'usuario.id as id_usuario', 'usuario.nombre as nombre', 'usuario.apellido as apellido', 'vehiculo.matricula') 
-        ->join('paquete_para_entregar', 'paquete_para_entregar.id', '=', 'paquete.id', 'left outer')
+        ->select('paquete.id', 'paquete_para_entregar.ubicacion_destino', 'paquete.peso', 'paquete.volumen', 'ubicacion.direccion', 'ubicacion.latitud', 'ubicacion.longitud', 'ubicacion.codigo_postal', 'usuario.id as id_usuario', 'usuario.nombre as nombre', 'usuario.apellido as apellido', 'vehiculo.matricula') 
+        ->leftJoin('paquete_para_entregar', 'paquete_para_entregar.id', '=', 'paquete.id')
         ->leftJoin('paquete_entregado', 'paquete_entregado.id', '=', 'paquete_para_entregar.id')
         ->whereNull('paquete_entregado.id')
         ->join('ubicacion', 'paquete_para_entregar.ubicacion_destino', '=', 'ubicacion.id', 'left outer')
-        ->join('almacen_contiene_paquete', 'almacen_contiene_paquete.id_paquete','=', 'paquete.id', 'left outer')
-        ->leftJoin('almacen_contiene_paquete_fin', 'almacen_contiene_paquete_fin.id','=', 'almacen_contiene_paquete.id')
-        ->whereNull('almacen_contiene_paquete_fin.id')
-        ->join('almacen', 'almacen.id','=','almacen_contiene_paquete.id_almacen','left outer')
-        ->join('ubicacion as ubicacion_almacen', 'ubicacion_almacen.id','=','almacen.id_ubicacion','left outer')
-        ->join('carga_paquete', 'carga_paquete.id_paquete', '=', 'paquete.id', 'left outer')
-        ->leftJoin('carga_paquete_fin', 'carga_paquete_fin.id', '=', 'carga_paquete.id')
-        ->whereNull('carga_paquete_fin.id')
+        ->leftJoin('carga_paquete', 'carga_paquete.id_paquete','=','paquete.id')
+        ->whereIn('paquete.id',
+                DB::table('carga_paquete')
+                ->whereNotIn('carga_paquete.id',
+                    DB::table('carga_paquete_fin')
+                    ->select('id')
+                )
+                ->select('carga_paquete.id_paquete')
+            )
         ->join('vehiculo', 'vehiculo.id', '=', 'carga_paquete.id_vehiculo', 'left outer')
-        ->join('maneja', 'maneja.id_vehiculo', '=', 'vehiculo.id', 'left outer')
-        ->leftJoin('maneja_fin', 'maneja_fin.id', '=', 'maneja.id')
-        ->whereNull('maneja_fin.id')
+        ->leftJoin('maneja', 'maneja.id_vehiculo','=','vehiculo.id')
+        ->whereIn('vehiculo.id',
+                DB::table('maneja')
+                ->whereNotIn('maneja.id',
+                    DB::table('maneja_fin')
+                    ->select('id')
+                )
+                ->select('maneja.id_vehiculo')
+            )
         ->join('usuario', 'usuario.id', '=', 'maneja.id_usuario', 'left outer')
         ->where('paquete.id', '=', $id)
         ->get();
@@ -99,6 +106,9 @@ class PaquetesCargadosController extends Controller
 
         //if esta en almacen que me mande un dato en almacen "x"
         //else manda el camion cargado
+
+        
+        
 
     }    
 
