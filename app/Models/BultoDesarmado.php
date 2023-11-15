@@ -5,18 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bultos extends Model
+class BultoDesarmado extends Model
 {
     use HasFactory;
 
-    protected $table = "bulto";
+    protected $table = "bulto_desarmado";
 
     public $timestamps = false;
     protected $fillable = [
 
-        "volumen",
-        "peso",
-        "almacen_destino"
+        "id"
 
     ];
 }
