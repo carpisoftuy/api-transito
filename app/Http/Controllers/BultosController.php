@@ -54,6 +54,7 @@ class BultosController extends Controller
             $almacenContieneBulto->id_almacen = $request->id_almacen;
             $almacenContieneBulto->fecha_inicio = now();
             $almacenContieneBulto->save();
+            DB::commit();
             return "bulto descargado en almacen " . $almacenContieneBulto->id_almacen;
         }
 
